@@ -6,6 +6,18 @@ if [ "${1:0:1}" != '-' ]; then
   exec "$@"
 fi
 
+lapse=5
+
+for count in {1..100}; do
+  sleep ${lapse}
+  echo "Pinging database attempt "${count}
+  if  $(nc -z ${DB_HOST} ${DB_PORT}) ; then
+    echo "Can connect into database"
+    break
+  fi
+  echo "Database is not ready yet. Waiting "${lapse}" for next try"
+done
+
 #chown -R sonarqube:sonarqube $SONARQUBE_HOME
 exec
   java -jar lib/sonar-application-$SONAR_VERSION.jar \
